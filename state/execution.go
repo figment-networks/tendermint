@@ -475,6 +475,10 @@ func fireEvents(
 	abciResponses *tmstate.ABCIResponses,
 	validatorUpdates []*types.Validator,
 ) {
+	if err := eventBus.PublishBeginBlock(block.Height); err != nil {
+		logger.Error("failed publishing block start", "err", err)
+	}
+
 	if err := eventBus.PublishEventNewBlock(types.EventDataNewBlock{
 		Block:            block,
 		ResultBeginBlock: *abciResponses.BeginBlock,
@@ -519,6 +523,10 @@ func fireEvents(
 			types.EventDataValidatorSetUpdates{ValidatorUpdates: validatorUpdates}); err != nil {
 			logger.Error("failed publishing event", "err", err)
 		}
+	}
+
+	if err := eventBus.PublishEndBlock(block.Height); err != nil {
+		logger.Error("failed publishing block end", "err", err)
 	}
 }
 

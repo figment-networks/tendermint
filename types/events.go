@@ -22,6 +22,10 @@ const (
 	EventTx                  = "Tx"
 	EventValidatorSetUpdates = "ValidatorSetUpdates"
 
+	// Frame bounds
+	EventBlockBegin = "BlockBegin"
+	EventBlockEnd   = "BlockEnd"
+
 	// Internal consensus events.
 	// These are used for testing the consensus state machine.
 	// They can also be used to build real-time consensus visualizers.
@@ -143,6 +147,8 @@ const (
 )
 
 var (
+	EventQueryBlockBegin          = QueryForEvent(EventBlockBegin)
+	EventQueryBlockEnd            = QueryForEvent(EventBlockEnd)
 	EventQueryCompleteProposal    = QueryForEvent(EventCompleteProposal)
 	EventQueryLock                = QueryForEvent(EventLock)
 	EventQueryNewBlock            = QueryForEvent(EventNewBlock)
@@ -171,6 +177,9 @@ func QueryForEvent(eventType string) tmpubsub.Query {
 
 // BlockEventPublisher publishes all block related events
 type BlockEventPublisher interface {
+	PublishBeginBlock(int64) error
+	PublishEndBlock(int64) error
+
 	PublishEventNewBlock(block EventDataNewBlock) error
 	PublishEventNewBlockHeader(header EventDataNewBlockHeader) error
 	PublishEventNewEvidence(evidence EventDataNewEvidence) error

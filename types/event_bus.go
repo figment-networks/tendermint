@@ -131,6 +131,14 @@ func (b *EventBus) validateAndStringifyEvents(events []types.Event, logger log.L
 	return result
 }
 
+func (b *EventBus) PublishBeginBlock(height int64) error {
+	return b.Publish(EventBlockBegin, height)
+}
+
+func (b *EventBus) PublishEndBlock(height int64) error {
+	return b.Publish(EventBlockEnd, height)
+}
+
 func (b *EventBus) PublishEventNewBlock(data EventDataNewBlock) error {
 	// no explicit deadline for publishing events
 	ctx := context.Background()
@@ -236,6 +244,14 @@ func (NopEventBus) Subscribe(
 	query tmpubsub.Query,
 	out chan<- interface{},
 ) error {
+	return nil
+}
+
+func (NopEventBus) PublishBeginBlock(height int64) error {
+	return nil
+}
+
+func (NopEventBus) PublishEndBlock(height int64) error {
 	return nil
 }
 
