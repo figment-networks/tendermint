@@ -475,49 +475,67 @@ func fireEvents(
 	abciResponses *tmstate.ABCIResponses,
 	validatorUpdates []*types.Validator,
 ) {
-	if err := eventBus.PublishEventNewBlock(types.EventDataNewBlock{
+	newBlock := types.EventDataNewBlock{
 		Block:            block,
 		ResultBeginBlock: *abciResponses.BeginBlock,
 		ResultEndBlock:   *abciResponses.EndBlock,
-	}); err != nil {
-		logger.Error("failed publishing new block", "err", err)
 	}
 
-	if err := eventBus.PublishEventNewBlockHeader(types.EventDataNewBlockHeader{
+	newBlockHeader := types.EventDataNewBlockHeader{
 		Header:           block.Header,
 		NumTxs:           int64(len(block.Txs)),
 		ResultBeginBlock: *abciResponses.BeginBlock,
 		ResultEndBlock:   *abciResponses.EndBlock,
-	}); err != nil {
-		logger.Error("failed publishing new block header", "err", err)
 	}
 
-	if len(block.Evidence.Evidence) != 0 {
-		for _, ev := range block.Evidence.Evidence {
-			if err := eventBus.PublishEventNewEvidence(types.EventDataNewEvidence{
-				Evidence: ev,
-				Height:   block.Height,
-			}); err != nil {
-				logger.Error("failed publishing new evidence", "err", err)
-			}
+	errors := []error{
+		execHook.Start(block.Height),
+		execHook.Block(newBlock),
+		execHook.BlockHeader(newBlockHeader),
+		eventBus.PublishEventNewBlock(newBlock),
+		eventBus.PublishEventNewBlockHeader(newBlockHeader),
+	}
+
+	for _, ev := range block.Evidence.Evidence {
+		evidenceData := types.EventDataNewEvidence{
+			Evidence: ev,
+			Height:   block.Height,
 		}
+
+		errors = append(errors,
+			execHook.Evidence(evidenceData),
+			eventBus.PublishEventNewEvidence(evidenceData),
+		)
 	}
 
 	for i, tx := range block.Data.Txs {
-		if err := eventBus.PublishEventTx(types.EventDataTx{TxResult: abci.TxResult{
+		txData := types.EventDataTx{TxResult: abci.TxResult{
 			Height: block.Height,
 			Index:  uint32(i),
 			Tx:     tx,
 			Result: *(abciResponses.DeliverTxs[i]),
-		}}); err != nil {
-			logger.Error("failed publishing event TX", "err", err)
-		}
+		}}
+
+		errors = append(errors,
+			execHook.Tx(txData),
+			eventBus.PublishEventTx(txData),
+		)
 	}
 
 	if len(validatorUpdates) > 0 {
-		if err := eventBus.PublishEventValidatorSetUpdates(
-			types.EventDataValidatorSetUpdates{ValidatorUpdates: validatorUpdates}); err != nil {
-			logger.Error("failed publishing event", "err", err)
+		setData := types.EventDataValidatorSetUpdates{ValidatorUpdates: validatorUpdates}
+
+		errors = append(errors,
+			execHook.ValidatorSetUpdates(setData),
+			eventBus.PublishEventValidatorSetUpdates(setData),
+		)
+	}
+
+	errors = append(errors, execHook.End(block.Height))
+
+	for _, err := range errors {
+		if err != nil {
+			logger.Error("publish error", "err", err)
 		}
 	}
 }
