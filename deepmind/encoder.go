@@ -1,6 +1,7 @@
 package deepmind
 
 import (
+	"github.com/figment-networks/tendermint-protobuf-def/codec"
 	"github.com/golang/protobuf/proto"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/types"
@@ -12,37 +13,42 @@ func encodeBlock(bh types.EventDataNewBlock) ([]byte, error) {
 	// 	return nil, err
 	// }
 
-	// nb := &codec.EventBlock{
-	// 	Block: &codec.Block{
-	// 		Header: &codec.Header{
-	// 			Version: &codec.Consensus{
-	// 				Block: bh.Block.Header.Version.Block,
-	// 				App:   bh.Block.Header.Version.App,
-	// 			},
-	// 			ChainId:            bh.Block.Header.ChainID,
-	// 			Height:             uint64(bh.Block.Header.Height),
-	// 			Time:               mapTimestamp(bh.Block.Header.Time),
-	// 			LastBlockId:        mapBlockID(bh.Block.LastBlockID),
-	// 			LastCommitHash:     bh.Block.Header.LastCommitHash,
-	// 			DataHash:           bh.Block.Header.DataHash,
-	// 			ValidatorsHash:     bh.Block.Header.ValidatorsHash,
-	// 			NextValidatorsHash: bh.Block.Header.NextValidatorsHash,
-	// 			ConsensusHash:      bh.Block.Header.ConsensusHash,
-	// 			AppHash:            bh.Block.Header.AppHash,
-	// 			LastResultsHash:    bh.Block.Header.LastResultsHash,
-	// 			EvidenceHash:       bh.Block.Header.EvidenceHash,
-	// 			ProposerAddress:    bh.Block.Header.ProposerAddress,
-	// 		},
-	// 		LastCommit: &codec.Commit{
-	// 			Height:     bh.Block.LastCommit.Height,
-	// 			Round:      bh.Block.LastCommit.Round,
-	// 			BlockId:    mapBlockID(bh.Block.LastCommit.BlockID),
-	// 			Signatures: mappedCommitSignatures,
-	// 		},
-	// 		Evidence: &codec.EvidenceList{},
-	// 		Data:     &codec.Data{},
-	// 	},
-	// }
+	ecBlock, err := bh.Block.ToProto()
+	if err != nil {
+		return nil, err
+	}
+
+	nb := &codec.EventBlock{
+		Block: ecBlock,
+		// 		Header: &codec.Header{
+		// 			Version: &codec.Consensus{
+		// 				Block: bh.Block.Header.Version.Block,
+		// 				App:   bh.Block.Header.Version.App,
+		// 			},
+		// 			ChainId:            bh.Block.Header.ChainID,
+		// 			Height:             uint64(bh.Block.Header.Height),
+		// 			Time:               mapTimestamp(bh.Block.Header.Time),
+		// 			LastBlockId:        mapBlockID(bh.Block.LastBlockID),
+		// 			LastCommitHash:     bh.Block.Header.LastCommitHash,
+		// 			DataHash:           bh.Block.Header.DataHash,
+		// 			ValidatorsHash:     bh.Block.Header.ValidatorsHash,
+		// 			NextValidatorsHash: bh.Block.Header.NextValidatorsHash,
+		// 			ConsensusHash:      bh.Block.Header.ConsensusHash,
+		// 			AppHash:            bh.Block.Header.AppHash,
+		// 			LastResultsHash:    bh.Block.Header.LastResultsHash,
+		// 			EvidenceHash:       bh.Block.Header.EvidenceHash,
+		// 			ProposerAddress:    bh.Block.Header.ProposerAddress,
+		// 		},
+		// 		LastCommit: &codec.Commit{
+		// 			Height:     bh.Block.LastCommit.Height,
+		// 			Round:      bh.Block.LastCommit.Round,
+		// 			BlockId:    mapBlockID(bh.Block.LastCommit.BlockID),
+		// 			Signatures: mappedCommitSignatures,
+		// 		},
+		// 		Evidence: &codec.EvidenceList{},
+		// 		Data:     &codec.Data{},
+
+	}
 
 	// nb.BlockId = &codec.BlockID{
 	// 	Hash: bh.Block.Header.Hash(),
@@ -165,7 +171,7 @@ func encodeBlock(bh types.EventDataNewBlock) ([]byte, error) {
 	// 	}
 	// }
 
-	return proto.Marshal(bh)
+	return proto.Marshal(nb)
 }
 
 func encodeTx(result *abci.TxResult) ([]byte, error) {
@@ -194,27 +200,32 @@ func encodeTx(result *abci.TxResult) ([]byte, error) {
 }
 
 func encodeValidatorSetUpdates(updates *types.EventDataValidatorSetUpdates) ([]byte, error) {
-	// result := &codec.EventValidatorSetUpdates{}
 
-	// for _, update := range updates.ValidatorUpdates {
-	// 	nPK := &codec.PublicKey{}
+	result := &codec.EventValidatorSetUpdates{}
 
-	// 	switch update.PubKey.Type() {
-	// 	case "ed25519":
-	// 		nPK.Sum = &codec.PublicKey_Ed25519{Ed25519: update.PubKey.Bytes()}
-	// 	case "secp256k1":
-	// 		nPK.Sum = &codec.PublicKey_Secp256K1{Secp256K1: update.PubKey.Bytes()}
-	// 	default:
-	// 		return nil, fmt.Errorf("unsupported pubkey type: %T", update.PubKey)
-	// 	}
+	for _, update := range updates.ValidatorUpdates {
+		// 	nPK := &codec.PublicKey{}
 
-	// 	result.ValidatorUpdates = append(result.ValidatorUpdates, &codec.Validator{
-	// 		Address:          update.Address.Bytes(),
-	// 		VotingPower:      update.VotingPower,
-	// 		ProposerPriority: update.ProposerPriority,
-	// 		PubKey:           nPK,
-	// 	})
-	// }
+		// 	switch update.PubKey.Type() {
+		// 	case "ed25519":
+		// 		nPK.Sum = &codec.PublicKey_Ed25519{Ed25519: update.PubKey.Bytes()}
+		// 	case "secp256k1":
+		// 		nPK.Sum = &codec.PublicKey_Secp256K1{Secp256K1: update.PubKey.Bytes()}
+		// 	default:
+		// 		return nil, fmt.Errorf("unsupported pubkey type: %T", update.PubKey)
+		// 	}
+		valUpdate, err := update.ToProto()
+		if err != nil {
+			return nil, err
+		}
 
-	return proto.Marshal(updates)
+		result.ValidatorUpdates = append(result.ValidatorUpdates, valUpdate)
+		// 		Address:          update.Address.Bytes(),
+		// 		VotingPower:      update.VotingPower,
+		// 		ProposerPriority: update.ProposerPriority,
+		// 		PubKey:           nPK,
+		// 	})
+	}
+
+	return proto.Marshal(result)
 }
