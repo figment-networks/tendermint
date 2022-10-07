@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tendermint/tendermint/deepmind"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/cors"
@@ -714,6 +715,12 @@ func NewNode(config *cfg.Config,
 	logger log.Logger,
 	options ...Option) (*Node, error) {
 
+	// Initialize data extraction
+	if config.Extractor.Enabled {
+		deepmind.Initialize(config.Extractor)
+		logger.Info("Initialized extractor module", "output", config.Extractor.OutputFile)
+	}
+
 	blockStore, stateDB, err := initDBs(config, dbProvider)
 	if err != nil {
 		return nil, err
@@ -1057,6 +1064,11 @@ func (n *Node) OnStop() {
 		if err := n.stateStore.Close(); err != nil {
 			n.Logger.Error("problem closing statestore", "err", err)
 		}
+	}
+
+	if deepmind.IsEnabled() {
+		n.Logger.Info("waiting for last block finalization", "module", "deepmind")
+		deepmind.Shutdown(context.Background())
 	}
 }
 
