@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/figment-networks/extractor-cosmos"
+
 	"github.com/tendermint/tendermint/types"
 )
 
