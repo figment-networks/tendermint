@@ -11,8 +11,6 @@ require (
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/bufbuild/buf v1.9.0
 	github.com/creachadair/taskgroup v0.3.2
-	github.com/figment-networks/extractor-cosmos v0.1.0
-	github.com/figment-networks/proto-cosmos v0.1.0
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/go-kit/kit v0.12.0
 	github.com/go-kit/log v0.2.1
@@ -22,6 +20,8 @@ require (
 	github.com/golangci/golangci-lint v1.50.1
 	github.com/google/orderedcode v0.0.1
 	github.com/gorilla/websocket v1.5.0
+	github.com/graphprotocol/extractor-cosmos v0.1.1
+	github.com/graphprotocol/proto-cosmos v0.1.3
 	github.com/gtank/merlin v0.1.1
 	github.com/lib/pq v1.10.6
 	github.com/libp2p/go-buffer-pool v0.1.0
@@ -35,6 +35,7 @@ require (
 	github.com/snikch/goodman v0.0.0-20171125024755-10e37e294daa
 	github.com/spf13/cobra v1.6.0
 	github.com/spf13/viper v1.13.0
+	github.com/streamingfast/pbgo v0.0.6-0.20221020131607-255008258d28 // indirect
 	github.com/stretchr/testify v1.8.0
 	github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 )
