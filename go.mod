@@ -11,8 +11,6 @@ require (
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/bufbuild/buf v1.9.0
 	github.com/creachadair/taskgroup v0.3.2
-	github.com/figment-networks/extractor-cosmos v0.1.0
-	github.com/figment-networks/proto-cosmos v0.1.0
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/go-kit/kit v0.12.0
 	github.com/go-kit/log v0.2.1
@@ -35,6 +33,7 @@ require (
 	github.com/snikch/goodman v0.0.0-20171125024755-10e37e294daa
 	github.com/spf13/cobra v1.6.0
 	github.com/spf13/viper v1.13.0
+	github.com/streamingfast/pbgo v0.0.6-0.20221020131607-255008258d28 // indirect
 	github.com/stretchr/testify v1.8.0
 	github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 )
@@ -51,6 +50,8 @@ require github.com/vektra/mockery/v2 v2.14.0
 
 require (
 	github.com/gogo/protobuf v1.3.2
+	github.com/graphprotocol/extractor-cosmos v0.1.1
+	github.com/graphprotocol/proto-cosmos v0.1.4
 	github.com/informalsystems/tm-load-test v1.0.0
 	gonum.org/v1/gonum v0.12.0
 	google.golang.org/protobuf v1.28.2-0.20220831092852-f930b1dc76e8

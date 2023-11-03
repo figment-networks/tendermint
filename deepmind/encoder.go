@@ -3,13 +3,15 @@ package deepmind
 import (
 	"fmt"
 
-	pbcosmos "github.com/figment-networks/proto-cosmos/pb/sf/cosmos/type/v1"
+	pbcosmos "github.com/graphprotocol/proto-cosmos/pb/sf/cosmos/type/v1"
+
 	"github.com/golang/protobuf/proto"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	"github.com/tendermint/tendermint/types"
 )
 
+// encodeBlock is mapping EventDataNewBlock structure fields into The Graph Block protobuf definition and returns bytes
 func encodeBlock(bh types.EventDataNewBlock) ([]byte, error) {
 	mappedEvidence, err := mapEvidence(&bh.Block.Evidence)
 	if err != nil {
