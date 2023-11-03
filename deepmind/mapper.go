@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	pbcosmos "github.com/figment-networks/proto-cosmos/pb/sf/cosmos/type/v1"
+	pbcosmos "github.com/graphprotocol/proto-cosmos/pb/sf/cosmos/type/v1"
+
 	"github.com/golang/protobuf/proto"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmcrypto "github.com/tendermint/tendermint/crypto"
@@ -191,8 +192,8 @@ func mapEvent(ev abci.Event) *pbcosmos.Event {
 
 	for _, at := range ev.Attributes {
 		cev.Attributes = append(cev.Attributes, &pbcosmos.EventAttribute{
-			Key:   string(at.Key),
-			Value: string(at.Value),
+			Key:   at.Key,
+			Value: at.Value,
 			Index: at.Index,
 		})
 	}
