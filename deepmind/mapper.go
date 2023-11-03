@@ -6,6 +6,7 @@ import (
 
 	pbcosmos "github.com/figment-networks/proto-cosmos/pb/sf/cosmos/type/v1"
 	"github.com/golang/protobuf/proto"
+	"github.com/pkg/errors"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmcrypto "github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/ed25519"
@@ -46,18 +47,15 @@ func mapEvidence(ed *types.EvidenceData) (*pbcosmos.EvidenceList, error) {
 		case *types.LightClientAttackEvidence:
 			mappedSetValidators, err := mapValidators(evN.ConflictingBlock.ValidatorSet.Validators)
 			if err != nil {
-				return nil, err
+				return nil, errors.Wrap(err, "error while mapping set validators")
 			}
 
 			mappedByzantineValidators, err := mapValidators(evN.ByzantineValidators)
 			if err != nil {
-				return nil, err
+				return nil, errors.Wrap(err, "error while mapping byzantine validators")
 			}
 
-			mappedCommitSignatures, err := mapSignatures(evN.ConflictingBlock.Commit.Signatures)
-			if err != nil {
-				return nil, err
-			}
+			mappedCommitSignatures := mapSignatures(evN.ConflictingBlock.Commit.Signatures)
 
 			newEv.Sum = &pbcosmos.Evidence_LightClientAttackEvidence{
 				LightClientAttackEvidence: &pbcosmos.LightClientAttackEvidence{
@@ -134,7 +132,7 @@ func mapResponseEndBlock(reb *abci.ResponseEndBlock) (*pbcosmos.ResponseEndBlock
 	for _, vu := range reb.ValidatorUpdates {
 		val, err := mapValidatorUpdate(vu)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "error while mapping validator update")
 		}
 		result.ValidatorUpdates = append(result.ValidatorUpdates, val)
 	}
@@ -213,25 +211,21 @@ func mapVote(edv *types.Vote) *pbcosmos.EventVote {
 	}
 }
 
-func mapSignatures(commitSignatures []types.CommitSig) ([]*pbcosmos.CommitSig, error) {
+func mapSignatures(commitSignatures []types.CommitSig) []*pbcosmos.CommitSig {
 	signatures := make([]*pbcosmos.CommitSig, len(commitSignatures))
 	for i, commitSignature := range commitSignatures {
-		signature, err := mapSignature(commitSignature)
-		if err != nil {
-			return nil, err
-		}
-		signatures[i] = signature
+		signatures[i] = mapSignature(commitSignature)
 	}
-	return signatures, nil
+	return signatures
 }
 
-func mapSignature(s types.CommitSig) (*pbcosmos.CommitSig, error) {
+func mapSignature(s types.CommitSig) *pbcosmos.CommitSig {
 	return &pbcosmos.CommitSig{
 		BlockIdFlag:      pbcosmos.BlockIDFlag(s.BlockIDFlag),
 		ValidatorAddress: s.ValidatorAddress.Bytes(),
 		Timestamp:        mapTimestamp(s.Timestamp),
 		Signature:        s.Signature,
-	}, nil
+	}
 }
 
 func mapValidatorUpdate(v abci.ValidatorUpdate) (*pbcosmos.ValidatorUpdate, error) {
@@ -261,7 +255,7 @@ func mapValidators(srcValidators []*types.Validator) ([]*pbcosmos.Validator, err
 	for i, validator := range srcValidators {
 		val, err := mapValidator(validator)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "error while mapping validator")
 		}
 		validators[i] = val
 	}

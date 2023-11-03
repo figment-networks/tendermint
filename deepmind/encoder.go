@@ -5,6 +5,7 @@ import (
 
 	pbcosmos "github.com/figment-networks/proto-cosmos/pb/sf/cosmos/type/v1"
 	"github.com/golang/protobuf/proto"
+	"github.com/pkg/errors"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	"github.com/tendermint/tendermint/types"
@@ -13,17 +14,14 @@ import (
 func encodeBlock(bh types.EventDataNewBlock) ([]byte, error) {
 	mappedEvidence, err := mapEvidence(&bh.Block.Evidence)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "error while mapping evidence")
 	}
 
-	mappedCommitSignatures, err := mapSignatures(bh.Block.LastCommit.Signatures)
-	if err != nil {
-		return nil, err
-	}
+	mappedCommitSignatures := mapSignatures(bh.Block.LastCommit.Signatures)
 
 	mappedResponseEndBlock, err := mapResponseEndBlock(&bh.ResultEndBlock)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "error while mapping response end block")
 	}
 
 	nb := &pbcosmos.Block{
@@ -64,7 +62,7 @@ func encodeBlock(bh types.EventDataNewBlock) ([]byte, error) {
 func encodeTx(result *abci.TxResult) ([]byte, error) {
 	mappedTx, err := mapTx(result.Tx)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "error while mapping tx")
 	}
 
 	tx := &pbcosmos.TxResult{
