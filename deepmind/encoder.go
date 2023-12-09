@@ -11,7 +11,8 @@ import (
 	"github.com/tendermint/tendermint/types"
 )
 
-func encodeBlock(bh types.EventDataNewBlock) ([]byte, error) {
+// EncodeBlock is mapping EventDataNewBlock structure fields into The Graph Block protobuf definition and returns bytes
+func EncodeBlock(bh types.EventDataNewBlock) ([]byte, error) {
 	mappedEvidence, err := mapEvidence(&bh.Block.Evidence)
 	if err != nil {
 		return nil, err

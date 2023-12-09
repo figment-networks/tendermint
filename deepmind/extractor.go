@@ -92,7 +92,7 @@ func AddBlockData(data types.EventDataNewBlock) error {
 		return nil
 	}
 
-	buff, err := encodeBlock(data)
+	buff, err := EncodeBlock(data)
 	if err != nil {
 		return err
 	}
