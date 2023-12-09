@@ -21,7 +21,7 @@ require (
 	github.com/google/orderedcode v0.0.1
 	github.com/gorilla/websocket v1.5.0
 	github.com/graphprotocol/extractor-cosmos v0.1.1
-	github.com/graphprotocol/proto-cosmos v0.1.3
+	github.com/graphprotocol/proto-cosmos v0.1.4
 	github.com/gtank/merlin v0.1.1
 	github.com/lib/pq v1.10.6
 	github.com/libp2p/go-buffer-pool v0.1.0

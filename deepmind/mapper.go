@@ -192,8 +192,8 @@ func mapEvent(ev abci.Event) *pbcosmos.Event {
 
 	for _, at := range ev.Attributes {
 		cev.Attributes = append(cev.Attributes, &pbcosmos.EventAttribute{
-			Key:   at.Key,
-			Value: at.Value,
+			Key:   string(at.Key),
+			Value: string(at.Value),
 			Index: at.Index,
 		})
 	}
