@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	pbcosmos "github.com/graphprotocol/proto-cosmos/pb/sf/cosmos/type/v1"
+	pbcosmos "github.com/figment-networks/proto-cosmos/pb/sf/cosmos/type/v1"
 
 	"github.com/golang/protobuf/proto"
 	abci "github.com/tendermint/tendermint/abci/types"

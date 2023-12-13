@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/graphprotocol/extractor-cosmos"
+	"github.com/figment-networks/extractor-cosmos"
 )
 
 const (
