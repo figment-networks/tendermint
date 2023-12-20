@@ -192,7 +192,8 @@ func mapEvent(ev abci.Event) *pbcosmos.Event {
 	for _, at := range ev.Attributes {
 		cev.Attributes = append(cev.Attributes, &pbcosmos.EventAttribute{
 			Key:   string(at.Key),
-			Value: string(at.Value),
+			// Remove non unicode characters from the string
+			Value: string([]rune(string(at.Value))),
 			Index: at.Index,
 		})
 	}
